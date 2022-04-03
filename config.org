@@ -29,7 +29,7 @@ Largely just removing UI options. It's a problem.
    '(uniquify-buffer-name-style nil nil (uniquify)))
 #+END_SRC
 ** Package Manager
-At one point I was using `straight.el` which was super cool, not sure why I stopped. I don't really have a reason to take advantage of it so I guess I'll do that later.
+At one point I was using =straight.el= which was super cool, not sure why I stopped. I don't really have a reason to take advantage of it so I guess I'll do that later.
 #+BEGIN_SRC emacs-lisp
   (require 'package)
   (setq package-enable-at-startup nil)
@@ -126,7 +126,7 @@ Using evil-collection prevents me from thinking which is a positive.
   :after evil
   :init (evil-collection-init))
 #+END_SRC
-Used to use the `evil-leader` package to uphold old vim habits. Now it's just a map cause it's exactly the same thing. Honestly makes the concept of leaders very confusing, but I also don't remember why it worked that way in the first place. 
+Used to use the =evil-leader= package to uphold old vim habits. Now it's just a map cause it's exactly the same thing. Honestly makes the concept of leaders very confusing, but I also don't remember why it worked that way in the first place. 
 #+BEGIN_SRC emacs-lisp
 (defvar my-leader-map
   (make-sparse-keymap)
@@ -153,7 +153,7 @@ Scarcely used, but it does feel good to save like 1 keystroke to add quote marks
   (global-evil-surround-mode t))
 #+END_SRC
 ** Org
-The sales pitch for org is a little complicated. It's really just markdown editing, with some funny built in stuff. 99% of which I don't use. It does support code execution out the box with `org-babel` and makes this file possible, so that's cool.
+The sales pitch for org is a little complicated. It's really just markdown editing, with some funny built in stuff. 99% of which I don't use. It does support code execution out the box with =org-babel= and makes this file possible, so that's cool.
 #+BEGIN_SRC emacs-lisp
    (use-package org
      :init
@@ -189,7 +189,7 @@ Emacs has a funny habit of changing a lot of formatting to be non-uniform. In or
 
   (add-hook 'org-mode-hook #'my/org-mode-hook)
 #+END_SRC
-Using a raw `t` as a bind in org-mode is pretty wild. I must have needed to update `to-do` items constantly in the past.
+Using a raw =t= as a bind in org-mode is pretty wild. I must have needed to update =to-do= items constantly in the past.
 #+BEGIN_SRC emacs-lisp
 (evil-define-key 'normal org-mode-map
   (kbd "t")   'org-todo
@@ -207,7 +207,7 @@ Last I checked helm is no longer supported after the single maintainer just said
 (setq helm-display-header-line nil)
 #+END_SRC
 ** Projectile
-I pretty much only care about projectile in the context of `helm-projectile` and `helm-projectile-grep`. More narrowing thanks.
+I pretty much only care about projectile in the context of =helm-projectile= and =helm-projectile-grep=. More narrowing thanks.
 #+BEGIN_SRC emacs-lisp
 (use-package projectile)
 (use-package helm-projectile)
