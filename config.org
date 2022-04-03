@@ -89,7 +89,7 @@ I used to try and sync the internal border width to other applications, but nowa
   (set-face-foreground 'vertical-border (face-background 'vertical-border))
 #+END_SRC
 ** Mode-line
-I tried to find a balance of my usual tendency to remove anything functional, by leaving a two functional things on my mode-line.
+I tried to find a balance of my usual tendency to remove anything functional, by leaving two functional things on my mode-line.
 #+BEGIN_SRC emacs-lisp
   (setq-default mode-line-format
     (list
