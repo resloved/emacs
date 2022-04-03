@@ -1,7 +1,7 @@
 Emacs is alright. I like the following about it:
-+ org-mode
-+ magit
-+ elisp interpreter first, text editor for convenience
++ =org-mode=
++ =magit=
++ =elisp= interpreter first, text editor for convenience
 That's about it.
 
 I'm whatever the opposite of as a power user is. My goal is to remove usability, while also configuring as little as possible.
