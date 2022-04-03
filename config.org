@@ -1,7 +1,7 @@
 Emacs is alright. I like the following about it:
 + org-mode
 + magit
-+ configuring with elisp
++ elisp interpreter first, text editor for convenience
 That's about it.
 
 I'm whatever the opposite of as a power user is. My goal is to remove usability, while also configuring as little as possible.
@@ -10,58 +10,58 @@ Usually when someone makes a literate config file it's because they have a lot o
 
 * Startup
 #+BEGIN_SRC emacs-lisp
-(package-initialize)
+  (package-initialize)
 #+END_SRC
 ** Custom variables
 Largely just removing UI options. It's a problem.
 #+BEGIN_SRC emacs-lisp
-(custom-set-variables
- '(package-selected-packages
-   '(python-black multi-term evil-collection evil-magit emojify yaml-mode rainbow-mode web-mode use-package org-download org-bullets magit helm-projectile evil-surround))
- '(org-modules
-   '(org-bbdb org-bibtex org-docview org-gnus org-info org-irc org-mhe org-rmail org-w3m))
- '(cua-mode nil nil (cua-base))
- '(fringe-mode 0 nil (fringe))
- '(scroll-bar-mode nil)
- '(tool-bar-mode nil)
- '(tooltip-mode nil)
- '(menu-bar-mode nil)
- '(uniquify-buffer-name-style nil nil (uniquify)))
+  (custom-set-variables
+   '(package-selected-packages
+     '(python-black multi-term evil-collection emojify yaml-mode rainbow-mode web-mode use-package org-download org-bullets magit helm-projectile evil-surround))
+   '(org-modules
+     '(org-bbdb org-bibtex org-docview org-gnus org-info org-irc org-mhe org-rmail org-w3m))
+   '(cua-mode nil nil (cua-base))
+   '(fringe-mode 0 nil (fringe))
+   '(scroll-bar-mode nil)
+   '(tool-bar-mode nil)
+   '(tooltip-mode nil)
+   '(menu-bar-mode nil)
+   '(uniquify-buffer-name-style nil nil (uniquify)))
 #+END_SRC
 ** Package Manager
-At one point I was using `straight.el` which was super cool, not sure why I stopped. I don't really have a reason to migrate so I guess I'll do that later.
+At one point I was using `straight.el` which was super cool, not sure why I stopped. I don't really have a reason to take advantage of it so I guess I'll do that later.
 #+BEGIN_SRC emacs-lisp
-(require 'package)
-(setq package-enable-at-startup nil)
-(add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
-(add-to-list 'package-archives '("melpa-stable" . "http://stable.melpa.org/packages/"))
-(add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t)
-(unless (package-installed-p 'use-pacakge)
-  (package-refresh-contents)
-  (package-install 'use-package))
-(eval-when-compile
-  (require 'use-package)
-  (setq use-package-always-ensure t))
+  (require 'package)
+  (setq package-enable-at-startup nil)
+  (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
+  (add-to-list 'package-archives '("melpa-stable" . "http://stable.melpa.org/packages/"))
+  (add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t)
+  (unless (package-installed-p 'use-pacakge)
+    (package-refresh-contents)
+    (package-install 'use-package))
+  (eval-when-compile
+    (require 'use-package)
+    (setq use-package-always-ensure t))
 #+END_SRC
 * General
 ** Font
 #+BEGIN_SRC emacs-lisp
-(custom-set-faces '(default ((t (:font "Monaco" :height 110)))))
+  (custom-set-faces '(default ((t (:font "Monaco" :height 110)))))
 #+END_SRC
 ** No Splash
 Who needs it.
 #+BEGIN_SRC emacs-lisp
-(setq inhibit-startup-screen t)
+  (setq inhibit-startup-screen t)
 #+END_SRC
 ** Tabs as spaces
 Get over it.
 #+BEGIN_SRC emacs-lisp
-(setq-default indent-tabs-mode nil)
+  (setq-default indent-tabs-mode nil)
 #+END_SRC
 ** Auto reload files
 Why not.
 #+BEGIN_SRC emacs-lisp
-(global-auto-revert-mode t)
+  (global-auto-revert-mode t)
 #+END_SRC
 * Visuals
 Mostly boring changes, that makes my life less functional.
@@ -107,64 +107,11 @@ I tried to find a balance of my usual tendency to remove anything functional, by
                       :background (face-background 'default))
 #+END_SRC
 * Utilities
-Honestly the utilities I do bother using are essentially what keeps me on emacs. I'm sure at this point they've all been replicated to some degree in any major text editor.
-** Org
-The sales pitch for org is a little complicated. It's really just markdown editing, with some funny built in stuff. 99% of which I don't use. It does support code execution out the box and makes this file possible, so that's cool.
-#+BEGIN_SRC emacs-lisp
-   (use-package org
-     :init
-     (progn (add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
-       (setq org-startup-indented t)))
-#+END_SRC
-I like the little arrow.
-#+BEGIN_SRC emacs-lisp
-   (use-package org-bullets
-     :init
-     (setq org-bullets-bullet-list
-           '(""))
-     :config
-     (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
-#+END_SRC
-When I was in school, org-download was a lifesaver. Drag and drop images from a website into a file saves a lot of hassle.
-#+BEGIN_SRC emacs-lisp
-   (use-package org-download)
-#+END_SRC
-Org has a funny habit of changing a lot of formatting. Mostly in headers. This undoes the most egregious cases.
-#+BEGIN_SRC emacs-lisp
-  (set-face-attribute 'org-document-title nil
-                      :height 1.0
-                      :weight 'normal)
-
-  (defun my/org-mode-hook ()
-    (dolist (face '(org-level-1
-                    org-level-2
-                    org-level-3
-                    org-level-4
-                    org-level-5))
-    (set-face-attribute face nil :weight 'semi-bold :height 1.0)))
-
-  (add-hook 'org-mode-hook #'my/org-mode-hook)
-#+END_SRC
-** Helm
-Last I checked helm is no longer supported after the single maintainer just said he was over it one day. I'm just gonna put off looking at the million other selection frameworks.
-#+BEGIN_SRC emacs-lisp
-(use-package helm)
-(global-set-key (kbd "M-x") 'helm-M-x)
-(setq helm-M-x-fuzzy-match t)
-(setq helm-display-header-line nil)
-#+END_SRC
-** Projectile
-I pretty much only care about projectile in the context of `helm-projectile`. More narrowing thanks.
-#+BEGIN_SRC emacs-lisp
-(use-package projectile)
-(use-package helm-projectile)
-(projectile-global-mode)
-(setq projectile-completion-system 'helm)
-(setq projectile-enable-caching t)
-(helm-projectile-on)
-#+END_SRC
+Honestly the ones I do bother using are essentially what keeps me on emacs. I'm sure at this point they've all been replicated to some degree in any major text editor, but whatever.
 ** Evil
-I don't really like how much configuration I have for evil honestly. Lot's of hold over that isn't particularily useful. Change is work.
+I can imagine a world where I don't use a modular text editor. It would be less enjoyable though.
+
+I don't really like how much configuration I have for evil honestly. Lots of hold over that isn't particularily useful.
 #+BEGIN_SRC emacs-lisp
 (use-package evil
   :init
@@ -179,7 +126,7 @@ Using evil-collection prevents me from thinking which is a positive.
   :after evil
   :init (evil-collection-init))
 #+END_SRC
-Used to use the `evil-leader` package to uphold old vim habits. Now it's just a map cause it's exactly the same thing. Honestly makes the concept of leaders very confusing in the first place, but I've also don't remember why it worked that way. 
+Used to use the `evil-leader` package to uphold old vim habits. Now it's just a map cause it's exactly the same thing. Honestly makes the concept of leaders very confusing, but I also don't remember why it worked that way in the first place. 
 #+BEGIN_SRC emacs-lisp
 (defvar my-leader-map
   (make-sparse-keymap)
@@ -198,23 +145,76 @@ Used to use the `evil-leader` package to uphold old vim habits. Now it's just a 
 (define-key my-leader-map "g" 'magit-status)
 (define-key my-leader-map "a" 'org-agenda)
 #+END_SRC
-Scarcely used, but it does feel good to save like 1 keystroke to add quote marks. I imagine there is a better solution.
+Scarcely used, but it does feel good to save like 1 keystroke to add quote marks or brackets. I imagine there is a better solution.
 #+BEGIN_SRC emacs-lisp
 (use-package evil-surround
   :after evil
   :config
   (global-evil-surround-mode t))
 #+END_SRC
-Remapped some org binds. Maybe it should be in the org-mode section. Oh well.
+** Org
+The sales pitch for org is a little complicated. It's really just markdown editing, with some funny built in stuff. 99% of which I don't use. It does support code execution out the box with `org-babel` and makes this file possible, so that's cool.
+#+BEGIN_SRC emacs-lisp
+   (use-package org
+     :init
+     (progn (add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
+       (setq org-startup-indented t)))
+#+END_SRC
+I like the little arrow. It's how I write physical notes. Ya know? The groceries and exestential algorithm ones.
+#+BEGIN_SRC emacs-lisp
+   (use-package org-bullets
+     :init
+     (setq org-bullets-bullet-list
+           '("⮑"))
+     :config
+     (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
+#+END_SRC
+When I was in school, org-download was a lifesaver. Drag and drop images from a website into a file saves a lot of hassle. This is my civil war memorial.
+#+BEGIN_SRC emacs-lisp
+   (use-package org-download)
+#+END_SRC
+Emacs has a funny habit of changing a lot of formatting to be non-uniform. In org it's in headers. This undoes the most egregious cases.
+#+BEGIN_SRC emacs-lisp
+  (set-face-attribute 'org-document-title nil
+                      :height 1.0
+                      :weight 'normal)
+
+  (defun my/org-mode-hook ()
+    (dolist (face '(org-level-1
+                    org-level-2
+                    org-level-3
+                    org-level-4
+                    org-level-5))
+    (set-face-attribute face nil :weight 'semi-bold :height 1.0)))
+
+  (add-hook 'org-mode-hook #'my/org-mode-hook)
+#+END_SRC
+Using a raw `t` as a bind in org-mode is pretty wild. I must have needed to update `to-do` items constantly in the past.
 #+BEGIN_SRC emacs-lisp
 (evil-define-key 'normal org-mode-map
   (kbd "t")   'org-todo
   (kbd "M-k") 'org-prev-superior
   (kbd "M-j") 'org-next-superior
-  (kbd "M-K") 'org-sr-fail
-  (kbd "M-J") 'org-sr-pass
   (kbd "M-h") 'org-promote-subtree
   (kbd "M-l") 'org-demote-subtree)
+#+END_SRC
+** Helm
+Last I checked helm is no longer supported after the single maintainer just said he was over it one day. I'm just gonna put off looking at the million other selection frameworks.
+#+BEGIN_SRC emacs-lisp
+(use-package helm)
+(global-set-key (kbd "M-x") 'helm-M-x)
+(setq helm-M-x-fuzzy-match t)
+(setq helm-display-header-line nil)
+#+END_SRC
+** Projectile
+I pretty much only care about projectile in the context of `helm-projectile` and `helm-projectile-grep`. More narrowing thanks.
+#+BEGIN_SRC emacs-lisp
+(use-package projectile)
+(use-package helm-projectile)
+(projectile-global-mode)
+(setq projectile-completion-system 'helm)
+(setq projectile-enable-caching t)
+(helm-projectile-on)
 #+END_SRC
 ** Magit
 Magit makes me reconsider what the UX experience should be for every piece of software I use for programming. No configuration necessary.
@@ -222,7 +222,7 @@ Magit makes me reconsider what the UX experience should be for every piece of so
   (use-package magit)
 #+END_SRC
 ** Tramp
-Tramp is very good. It might not be unique, but it functions in a way where I don't have to think about it. Primary way I edit remote files.
+Tramp is very good. It might not be unique, but it functions in a way where it works how I expect everytime. Primary way I edit remote files.
 #+BEGIN_SRC emacs-lisp
   (setq tramp-default-method "ssh")
   (eval-after-load 'tramp '(setenv "SHELL" "/bin/bash"))
@@ -230,12 +230,12 @@ Tramp is very good. It might not be unique, but it functions in a way where I do
 ** Terminal
 Had a phase where I tried to exclusivly use terminals within emacs, but there was always some compatibility issue no matter the amount of configuration. Now I just use default mutli-term with zsh. Boring.
 
-I was really into the idea of `vterm` for a bit and then just didn't care after it failed to compile one time.
+I was really into the idea of [[https://github.com/akermu/emacs-libvterm][vterm]] for a bit and then just didn't care after it failed to compile one time.
 #+BEGIN_SRC emacs-lisp
   (setq multi-term-program "/bin/zsh")
 #+END_SRC
 * Languages
-Largly emacs language mode support is pretty good out of the box, and I don't need much besides that. Maybe I'll use [[http://company-mode.github.io][company]] one day.
+Largly emacs language "mode" support is pretty good out of the box, and I don't need much besides that. Maybe I'll use [[http://company-mode.github.io][company]] one day.
 ** Python
 I've been using black for a bit now. Is it better then any other python formatter? No idea.
 #+BEGIN_SRC emacs-lisp
