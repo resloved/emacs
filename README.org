@@ -1,14 +1,17 @@
+#+TITLE: Should I use emacs?
+
 Emacs is alright. I like the following about it:
 + =org-mode=
 + =magit=
 + =elisp= interpreter first, text editor for convenience
 That's about it.
 
-I'm whatever the opposite of as a power user is. My goal is to remove usability, while also configuring as little as possible.
+The following is my actual emacs configuration file. It's written in an =org-mode= document which allows for code execution and as a result a literate configuration file.
 
-Usually when someone makes a literate config file it's because they have a lot of opinions. I have one because I needed an excuse to purge.
+Usually when someone makes one of these it's because they have a lot of opinions. I have one because I needed an excuse to purge.
 
 * Startup
+I'm whatever the opposite of as a power user is. My goal is to remove usability, while also configuring as little as possible.
 #+BEGIN_SRC emacs-lisp
   (package-initialize)
 #+END_SRC
@@ -263,3 +266,5 @@ Anything I don't feel like explaining to myself or phantoms.
   (use-package emojify)
   (use-package yaml-mode)
 #+END_SRC
+
+Ok good luck.
