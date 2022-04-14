@@ -22,7 +22,7 @@ Largely just removing UI options. It's a problem.
    '(package-selected-packages
      '(python-black multi-term evil-collection emojify yaml-mode rainbow-mode web-mode use-package org-download org-bullets magit helm-projectile evil-surround))
    '(org-modules
-     '(org-bbdb org-bibtex org-docview org-gnus org-info org-irc org-mhe org-rmail org-w3m))
+     '(org-bbdb org-bibtex org-docview org-gnus org-info org-irc org-mhe org-rmail org-w3m org-tempo))
    '(cua-mode nil nil (cua-base))
    '(fringe-mode 0 nil (fringe))
    '(scroll-bar-mode nil)
@@ -131,22 +131,24 @@ Using evil-collection prevents me from thinking which is a positive.
 #+END_SRC
 Used to use the =evil-leader= package to uphold old vim habits. Now it's just a map cause it's exactly the same thing. Honestly makes the concept of leaders very confusing, but I also don't remember why it worked that way in the first place. 
 #+BEGIN_SRC emacs-lisp
-(defvar my-leader-map
-  (make-sparse-keymap)
-  "Keymap for 'leader key' shortcuts.")
-(evil-define-key 'normal global-map "," my-leader-map)
-(define-key my-leader-map "e" 'helm-projectile)
-(define-key my-leader-map "b" 'helm-mini)
-(define-key my-leader-map "s" 'helm-projectile-grep)
-(define-key my-leader-map "z" 'previous-buffer)
-(define-key my-leader-map "x" 'next-buffer)
-(define-key my-leader-map "c" 'kill-buffer)
-(define-key my-leader-map "v" 'split-window-below)
-(define-key my-leader-map "h" 'split-window-right)
-(define-key my-leader-map "w" 'other-window)
-(define-key my-leader-map "t" 'multi-term)
-(define-key my-leader-map "g" 'magit-status)
-(define-key my-leader-map "a" 'org-agenda)
+  (defvar my-leader-map
+    (make-sparse-keymap)
+    "Keymap for 'leader key' shortcuts.")
+  (evil-define-key 'normal global-map "," my-leader-map)
+  (define-key my-leader-map "e" 'helm-projectile)
+  (define-key my-leader-map "b" 'helm-mini)
+  (define-key my-leader-map "s" 'helm-projectile-grep)
+  (define-key my-leader-map "r" 'rgrep)
+  (define-key my-leader-map "n" 'rename-buffer)
+  (define-key my-leader-map "z" 'previous-buffer)
+  (define-key my-leader-map "x" 'next-buffer)
+  (define-key my-leader-map "c" 'kill-buffer)
+  (define-key my-leader-map "v" 'split-window-below)
+  (define-key my-leader-map "h" 'split-window-right)
+  (define-key my-leader-map "w" 'other-window)
+  (define-key my-leader-map "t" 'multi-term)
+  (define-key my-leader-map "g" 'magit-status)
+  (define-key my-leader-map "p" (lambda () (interactive) (load "~/.emacs.d/init.el")))
 #+END_SRC
 Scarcely used, but it does feel good to save like 1 keystroke to add quote marks or brackets. I imagine there is a better solution.
 #+BEGIN_SRC emacs-lisp
