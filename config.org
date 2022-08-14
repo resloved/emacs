@@ -1,0 +1,294 @@
+#+TITLE: Should I use emacs?
+
+Emacs is alright. I like the following about it:
++ =org-mode=
++ =magit=
++ =elisp= interpreter first, text editor for convenience
+That's about it.
+
+The following is my actual emacs configuration file. It's written in an =org-mode= document which allows for code execution and as a result a literate configuration file.
+
+Usually when someone makes one of these it's because they have a lot of opinions. I have one because I needed an excuse to purge.
+
+* Startup
+I'm whatever the opposite of as a power user is. My goal is to remove usability, while also configuring as little as possible.
+** Package Manager
+[[https://github.com/raxod502/straight.el][straight.el]] is super cool, let's you poke around and edit packages really easily.
+#+begin_src emacs-lisp
+  (defvar bootstrap-version)
+  (let ((bootstrap-file
+         (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+        (bootstrap-version 5))
+    (unless (file-exists-p bootstrap-file)
+      (with-current-buffer
+          (url-retrieve-synchronously
+           "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+           'silent 'inhibit-cookies)
+        (goto-char (point-max))
+        (eval-print-last-sexp)))
+    (load bootstrap-file nil 'nomessage))
+#+end_src
+#+begin_src emacs-lisp
+  (straight-use-package 'use-package)
+  (use-package straight
+               :custom (straight-use-package-by-default t))
+#+end_src
+When emacs is run as a GUI app add environment variables from shell.
+#+begin_src emacs-lisp
+  (use-package exec-path-from-shell) 
+  (when (memq window-system '(mac ns x))
+    (exec-path-from-shell-initialize))
+#+end_src
+* General
+** Font
+#+begin_src emacs-lisp
+  (custom-set-faces '(default ((t (:font "Monaco" :height 110)))))
+#+end_src
+** No Splash
+Who needs it.
+#+begin_src emacs-lisp
+  (setq inhibit-startup-screen t)
+#+end_src
+** Tabs as spaces
+Get over it.
+#+begin_src emacs-lisp
+  (setq-default indent-tabs-mode nil)
+  (setq-default tab-width 4)
+#+end_src
+** Auto reload files
+Why not.
+#+begin_src emacs-lisp
+  (global-auto-revert-mode t)
+#+end_src
+** Store backup files (ie. *~) into folder
+Stop cluttering my shit emacs.
+#+begin_src emacs-lisp
+  (setq backup-directory-alist
+           `(("." . ,(concat user-emacs-directory "backups"))))
+#+end_src
+* Visuals
+Mostly boring changes, that makes my life less functional.
+** General
+Syntax highlighting is off by default? Wild.
+#+begin_src emacs-lisp
+  (global-font-lock-mode 1)
+#+end_src
+** Visual Line Mode
+I like wrapping lines sue me.
+#+begin_src emacs-lisp
+  (global-visual-line-mode 1)
+#+end_src
+** Theme(s)
+Just using doom-one lately, it's good.
+#+begin_src emacs-lisp
+  (use-package doom-themes)
+  (load-theme 'doom-one t)
+#+end_src
+** Borders
+I used to try and sync the internal border width to other applications, but nowadays I just use 16 which has been a sensible default. Also just make vertical borders go away.
+#+begin_src emacs-lisp
+  (add-to-list 'default-frame-alist '(internal-border-width . 16))
+  (set-face-background 'vertical-border (face-background 'default))
+  (set-face-foreground 'vertical-border (face-background 'vertical-border))
+#+end_src
+** Mode-line
+I tried to find a balance of my usual tendency to remove anything functional, by leaving two functional things on my mode-line.
+#+begin_src emacs-lisp
+  (setq-default mode-line-format
+    (list
+     '(:eval (propertize "%b"))
+     '(:eval (if (buffer-modified-p)
+                 (propertize " ● " 'face '(:foreground "#ff6c6b"))
+               (propertize " ● " 'face '(:foreground "#98be65"))))
+     '(:eval (propertize "%l"))
+     '(:eval (propertize " ● " 'face '(:foreground "#5B6268")))
+     '(:eval (propertize "%m"))))
+
+  (set-face-attribute 'mode-line nil
+                      :background (face-background 'default))
+  (set-face-attribute 'mode-line-inactive nil
+                      :background (face-background 'default))
+#+end_src
+* Utilities
+Honestly the ones I do bother using are essentially what keeps me on emacs. I'm sure at this point they've all been replicated to some degree in any major text editor, but whatever.
+** Evil
+I can imagine a world where I don't use a modular text editor. It would be less enjoyable though.
+
+I don't really like how much configuration I have for evil honestly. Lots of hold over that isn't particularily useful.
+#+begin_src emacs-lisp
+(use-package evil
+  :init
+  (setq evil-want-integration nil)
+  (setq evil-want-keybinding nil)
+  :config
+  (evil-mode t))
+#+end_src
+Using evil-collection prevents me from thinking which is a positive.
+#+begin_src emacs-lisp
+(use-package evil-collection
+  :after evil
+  :init (evil-collection-init))
+#+end_src
+Used to use the =evil-leader= package to uphold old vim habits. Now it's just a map cause it's exactly the same thing. Honestly makes the concept of leaders very confusing, but I also don't remember why it worked that way in the first place. 
+#+begin_src emacs-lisp
+  (defvar my-leader-map
+    (make-sparse-keymap)
+    "Keymap for 'leader key' shortcuts.")
+
+  (evil-define-key 'normal global-map "," my-leader-map)
+  (define-key my-leader-map "q" 'find-file)
+  (define-key my-leader-map "e" 'consult-recent-file)
+  (define-key my-leader-map "r" 'consult-grep)
+  (define-key my-leader-map "b" 'consult-buffer)
+  (define-key my-leader-map "n" 'rename-buffer)
+  (define-key my-leader-map "z" 'previous-buffer)
+  (define-key my-leader-map "x" 'next-buffer)
+  (define-key my-leader-map "c" 'kill-buffer)
+  (define-key my-leader-map "v" 'split-window-below)
+  (define-key my-leader-map "h" 'split-window-right)
+  (define-key my-leader-map "w" 'other-window)
+  (define-key my-leader-map "t" 'multi-term)
+  (define-key my-leader-map "g" 'magit-status)
+  (define-key my-leader-map "p" (lambda () (interactive)
+    (load "~/.emacs.d/init.el")))
+#+end_src
+Scarcely used, but it does feel good to save like 1 keystroke to add quote marks or brackets. I imagine there is a better solution.
+#+begin_src emacs-lisp
+(use-package evil-surround
+  :after evil
+  :config
+  (global-evil-surround-mode t))
+#+end_src
+** Org
+The sales pitch for org is a little complicated. It's really just markdown editing, with some funny built in stuff. 99% of which I don't use. It does support code execution out the box with =org-babel= and makes this file possible, so that's cool.
+#+begin_src emacs-lisp
+   (use-package org
+     :init
+     (progn (add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
+       (setq org-startup-indented t)))
+#+end_src
+I like the little arrow. It's how I write physical notes. Ya know? The groceries and exestential algorithm ones.
+#+begin_src emacs-lisp
+   (use-package org-bullets
+     :init
+     (setq org-bullets-bullet-list
+           '("⮑"))
+     :config
+     (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
+#+end_src
+Emacs has a funny habit of changing a lot of formatting to be non-uniform. In org it's in headers. This undoes the most egregious cases.
+#+begin_src emacs-lisp
+  (set-face-attribute 'org-document-title nil
+                      :height 1.0
+                      :weight 'normal)
+
+  (defun my/org-mode-hook ()
+    (dolist (face '(org-level-1
+                    org-level-2
+                    org-level-3
+                    org-level-4
+                    org-level-5))
+    (set-face-attribute face nil :weight 'semi-bold :height 1.0)))
+
+  (add-hook 'org-mode-hook #'my/org-mode-hook)
+#+end_src
+Using a raw =t= as a bind in org-mode is pretty wild. I must have needed to update =to-do= items constantly in the past.
+#+begin_src emacs-lisp
+(evil-define-key 'normal org-mode-map
+  (kbd "t")   'org-todo
+  (kbd "M-k") 'org-prev-superior
+  (kbd "M-j") 'org-next-superior
+  (kbd "M-h") 'org-promote-subtree
+  (kbd "M-l") 'org-demote-subtree)
+#+end_src
+** Magit
+Magit makes me reconsider what the UX experience should be for every piece of software I use for programming. No configuration necessary.
+#+begin_src emacs-lisp
+  (use-package magit)
+#+end_src
+** Tramp
+Tramp is very good. It might not be unique, but it functions in a way where it works how I expect everytime. Primary way I edit remote files.
+#+begin_src emacs-lisp
+  (setq tramp-default-method "ssh")
+  (eval-after-load 'tramp '(setenv "SHELL" "/bin/bash"))
+#+end_src
+** Terminal
+Had a phase where I tried to exclusivly use terminals within emacs, but there was always some compatibility issue no matter the amount of configuration. Now I just use default =multi-term= with zsh. Boring.
+
+I was really into the idea of [[https://github.com/akermu/emacs-libvterm][vterm]] for a bit and then just didn't care after it failed to compile one time.
+#+begin_src emacs-lisp
+  (use-package multi-term)
+#+end_src
+** Narrowing
+Most configurations I make for an editor are just things that make me feel better. I'm convinced the only configuration changes that give me efficiency gains are for whatever search framework I'm using. It's the least cognitive task that I do the most.
+
+Historically that's been with =helm=, but I'm giving the whole meme stack a try because =helm= always felt like I was one button away from disaster at any moment.
+
+Why =vertico=? It uses the built in emacs commands which seems nice. All the tiny ones seem similar enough.
+
+*** Vertico
+Extends minibuffer tasks to our narrowing framework.
+#+begin_src emacs-lisp
+  (use-package vertico)
+  (vertico-mode)
+#+end_src
+*** Orderless
+Gives minibuffer a "fuzzier" search.
+#+begin_src emacs-lisp
+  (use-package orderless)
+  (setq completion-styles '(orderless basic))
+#+end_src
+*** Marginalia
+Add context to minibuffer options.
+#+begin_src emacs-lisp
+  (use-package marginalia)
+  (marginalia-mode)
+#+end_src
+*** Consult
+Not sure if I like consult or not. Seems a bit overkill for my needs.
+#+begin_src emacs-lisp
+  (use-package consult)
+  (recentf-mode)
+  (consult-customize consult-buffer consult-recent-file consult-grep :preview-key nil)
+#+end_src
+
+* Programming
+** Languages
+Largly emacs language "mode" support is pretty good out of the box, and I don't need much besides that.
+*** Python
+I've been using black for a bit now. Is it better then any other python formatter? No idea.
+#+begin_src emacs-lisp
+(use-package python-black
+  :after python
+  :hook (python-mode . python-black-on-save-mode-enable-dwim))
+#+end_src
+*** Web Shit
+Web mode is ok, I never think about it. I used to be a big [[https://github.com/smihica/emmet-mode][emmet]] fan. One day I didn't have it in my config and never bothered to re-add it. My life remained the same.
+#+begin_src emacs-lisp
+(use-package web-mode
+  :ensure t
+  :mode
+  ("\\.ejs\\'" "\\.hbs\\'" "\\.html\\'" "\\.php\\'" "\\.[jt]sx?\\'")
+  :config
+  (setq web-mode-content-types-alist '(("jsx" . "\\.[jt]sx?\\'")))
+  (setq web-mode-enable-auto-pairing t)
+  (setq web-mode-enable-auto-closing t)
+  (setq web-mode-enable-current-element-highlight t))
+#+end_src
+** Tree Sitter
+People said this was cool. I don't really get it.
+#+begin_src emacs-lisp
+  (use-package tree-sitter)
+  (use-package tree-sitter-langs)
+  (global-tree-sitter-mode)
+  (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode)
+#+end_src
+* Other
+Anything I don't feel like explaining to myself or phantoms.
+#+begin_src emacs-lisp
+  (use-package rainbow-mode)
+  (use-package emojify)
+  (use-package yaml-mode)
+#+end_src
+
+Ok good luck.
