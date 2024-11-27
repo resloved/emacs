@@ -42,7 +42,7 @@ When emacs is run as a GUI app add environment variables from shell.
 * General
 ** Font
 #+begin_src emacs-lisp
-  (custom-set-faces '(default ((t (:font "Monaco" :height 110)))))
+  (custom-set-faces '(default ((t (:font "Hasklug Nerd Font Mono" :height 120)))))
 #+end_src
 ** No Splash
 Who needs it.
@@ -54,6 +54,7 @@ Get over it.
 #+begin_src emacs-lisp
   (setq-default indent-tabs-mode nil)
   (setq-default tab-width 4)
+
 #+end_src
 ** Auto reload files
 Why not.
@@ -82,7 +83,7 @@ I like wrapping lines sue me.
 Just using doom-one lately, it's good.
 #+begin_src emacs-lisp
   (use-package doom-themes)
-  (load-theme 'doom-one t)
+  (load-theme 'doom-molokai t)
 #+end_src
 ** Borders
 I used to try and sync the internal border width to other applications, but nowadays I just use 16 which has been a sensible default. Also just make vertical borders go away.
@@ -172,7 +173,7 @@ I like the little arrow. It's how I write physical notes. Ya know? The groceries
    (use-package org-bullets
      :init
      (setq org-bullets-bullet-list
-           '("⮑"))
+           '("󱞩"))
      :config
      (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
 #+end_src
